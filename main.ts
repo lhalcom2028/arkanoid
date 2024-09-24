@@ -1,7 +1,14 @@
 namespace SpriteKind {
     export const redBrick = SpriteKind.create()
     export const powerupBall = SpriteKind.create()
+    export const bomberBall = SpriteKind.create()
+    export const ball = SpriteKind.create()
 }
+scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile`, function (sprite, location) {
+    bounceBall(sprite)
+    tiles.setTileAt(location, assets.tile`transparency16`)
+    info.changeScoreBy(1)
+})
 function levelThree () {
     game.splash("Level Three!")
     if (level == 3) {
@@ -132,13 +139,13 @@ function levelThree () {
         tiles.setCurrentTilemap(tilemap`level7`)
         spawnHero()
         spawnBall()
-        spawnBricks()
     }
 }
 scene.onOverlapTile(SpriteKind.Projectile, assets.tile`myTile3`, function (sprite, location) {
     bounceBall(sprite)
     tiles.setTileAt(location, assets.tile`myTile2`)
     info.changeScoreBy(1)
+    sprites.destroy(sprite)
 })
 info.onScore(210, function () {
     level += 1
@@ -158,7 +165,7 @@ function spawnBall () {
     ball = sprites.create(img`
         2 2 
         2 2 
-        `, SpriteKind.Projectile)
+        `, SpriteKind.ball)
     ball.setVelocity(ballSpeed, ballSpeed)
     ball.setPosition(73, 80)
     ball.setBounceOnWall(true)
@@ -167,33 +174,35 @@ scene.onOverlapTile(SpriteKind.Projectile, assets.tile`myTile2`, function (sprit
     bounceBall(sprite)
     tiles.setTileAt(location, assets.tile`myTile1`)
     info.changeScoreBy(1)
+    sprites.destroy(sprite)
 })
 scene.onOverlapTile(SpriteKind.Projectile, assets.tile`myTile`, function (sprite, location) {
     bounceBall(sprite)
     tiles.setTileAt(location, assets.tile`transparency16`)
     info.changeScoreBy(1)
+    sprites.destroy(sprite)
 })
 scene.onOverlapTile(SpriteKind.powerupBall, assets.tile`myTile`, function (sprite, location) {
     bounceBall(sprite)
     tiles.setTileAt(location, assets.tile`transparency16`)
     info.changeScoreBy(1)
 })
-scene.onOverlapTile(SpriteKind.Projectile, assets.tile`myTile4`, function (sprite, location) {
+scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile4`, function (sprite, location) {
     bounceBall(sprite)
     tiles.setTileAt(location, assets.tile`myTile3`)
     info.changeScoreBy(1)
 })
-function powerupBall () {
-    sprites.destroy(ball)
-    powerBall = sprites.create(img`
-        9 9 9 
-        9 9 9 
-        9 9 9 
-        `, SpriteKind.powerupBall)
-    pause(10000)
-    sprites.destroy(powerBall)
-    spawnBall()
-}
+scene.onOverlapTile(SpriteKind.Projectile, assets.tile`myTile4`, function (sprite, location) {
+    bounceBall(sprite)
+    tiles.setTileAt(location, assets.tile`myTile3`)
+    info.changeScoreBy(1)
+    sprites.destroy(sprite)
+})
+scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile0`, function (sprite, location) {
+    bounceBall(sprite)
+    tiles.setTileAt(location, assets.tile`myTile4`)
+    info.changeScoreBy(1)
+})
 function bounceBall (mySprite: Sprite) {
     ballspedX = randint(ballSpeed / 3, ballSpeed)
     ballspedY = mySprite.vy * -1
@@ -336,8 +345,12 @@ function levelOne () {
     tiles.setCurrentTilemap(tilemap`level0`)
     spawnHero()
     spawnBall()
-    spawnBricks()
 }
+scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile3`, function (sprite, location) {
+    bounceBall(sprite)
+    tiles.setTileAt(location, assets.tile`myTile2`)
+    info.changeScoreBy(1)
+})
 info.onScore(30, function () {
     level += 1
     levelTwo()
@@ -347,13 +360,18 @@ scene.onOverlapTile(SpriteKind.powerupBall, assets.tile`myTile1`, function (spri
     tiles.setTileAt(location, assets.tile`transparency16`)
     info.changeScoreBy(2)
 })
+scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile2`, function (sprite, location) {
+    bounceBall(sprite)
+    tiles.setTileAt(location, assets.tile`myTile1`)
+    info.changeScoreBy(1)
+})
 function bomberBall () {
     sprites.destroy(ball)
     bomberball = sprites.create(img`
         9 9 9 
         9 9 9 
         9 9 9 
-        `, SpriteKind.powerupBall)
+        `, SpriteKind.bomberBall)
     pause(10000)
     sprites.destroy(bomberball)
     spawnBall()
@@ -488,7 +506,6 @@ function levelTen () {
         tiles.setCurrentTilemap(tilemap`level21`)
         spawnHero()
         spawnBall()
-        spawnBricks()
     }
 }
 scene.onOverlapTile(SpriteKind.powerupBall, assets.tile`myTile3`, function (sprite, location) {
@@ -496,9 +513,33 @@ scene.onOverlapTile(SpriteKind.powerupBall, assets.tile`myTile3`, function (spri
     tiles.setTileAt(location, assets.tile`transparency16`)
     info.changeScoreBy(4)
 })
+scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile1`, function (sprite, location) {
+    bounceBall(sprite)
+    tiles.setTileAt(location, assets.tile`myTile`)
+    info.changeScoreBy(1)
+})
 info.onScore(525, function () {
     level += 1
     levelEight()
+})
+scene.onOverlapTile(SpriteKind.bomberBall, assets.tile`myTile2`, function (sprite, location) {
+    bounceBall(sprite)
+    tiles.setTileAt(location, assets.tile`transparency16`)
+    info.changeScoreBy(1)
+    sprite.startEffect(effects.fire)
+    sprites.destroy(sprite)
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
 })
 function levelNine () {
     game.splash("Level Nine!")
@@ -630,7 +671,6 @@ function levelNine () {
         tiles.setCurrentTilemap(tilemap`level19`)
         spawnHero()
         spawnBall()
-        spawnBricks()
     }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Projectile, function (sprite, otherSprite) {
@@ -641,6 +681,7 @@ scene.onOverlapTile(SpriteKind.Projectile, assets.tile`myTile0`, function (sprit
     bounceBall(sprite)
     tiles.setTileAt(location, assets.tile`myTile4`)
     info.changeScoreBy(1)
+    sprites.destroy(sprite)
 })
 scene.onOverlapTile(SpriteKind.powerupBall, assets.tile`myTile2`, function (sprite, location) {
     bounceBall(sprite)
@@ -650,6 +691,25 @@ scene.onOverlapTile(SpriteKind.powerupBall, assets.tile`myTile2`, function (spri
 info.onScore(810, function () {
     level += 1
     levelTen()
+})
+scene.onOverlapTile(SpriteKind.bomberBall, assets.tile`myTile1`, function (sprite, location) {
+    bounceBall(sprite)
+    tiles.setTileAt(location, assets.tile`transparency16`)
+    info.changeScoreBy(1)
+    sprite.startEffect(effects.fire)
+    sprites.destroy(sprite)
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
 })
 function levelElevel () {
     game.splash("Bonus Level!")
@@ -781,9 +841,27 @@ function levelElevel () {
         tiles.setCurrentTilemap(tilemap`level21`)
         spawnHero()
         spawnBall()
-        spawnBricks()
     }
 }
+scene.onOverlapTile(SpriteKind.bomberBall, assets.tile`myTile4`, function (sprite, location) {
+    bounceBall(sprite)
+    tiles.setTileAt(location, assets.tile`transparency16`)
+    info.changeScoreBy(1)
+    sprite.startEffect(effects.fire)
+    sprites.destroy(sprite)
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+})
 function threeBalls () {
     spawnBall()
     spawnBall()
@@ -918,7 +996,6 @@ function levelSeven () {
         tiles.setCurrentTilemap(tilemap`level15`)
         spawnHero()
         spawnBall()
-        spawnBricks()
     }
 }
 function levelFive () {
@@ -1051,16 +1128,45 @@ function levelFive () {
         tiles.setCurrentTilemap(tilemap`level11`)
         spawnHero()
         spawnBall()
-        spawnBricks()
     }
 }
 info.onScore(405, function () {
     level += 1
     levelSeven()
 })
+function powerupBall2 () {
+    sprites.destroy(ball)
+    powerBall = sprites.create(img`
+        9 9 9 
+        9 9 9 
+        9 9 9 
+        `, SpriteKind.powerupBall)
+    pause(10000)
+    sprites.destroy(powerBall)
+    spawnBall()
+}
 info.onScore(660, function () {
     level += 1
     levelNine()
+})
+scene.onOverlapTile(SpriteKind.bomberBall, assets.tile`myTile`, function (sprite, location) {
+    bounceBall(sprite)
+    tiles.setTileAt(location, assets.tile`transparency16`)
+    info.changeScoreBy(1)
+    sprite.startEffect(effects.fire)
+    sprites.destroy(sprite)
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
 })
 info.onScore(135, function () {
     level += 1
@@ -1210,7 +1316,6 @@ function levelFour () {
         tiles.setCurrentTilemap(tilemap`level9`)
         spawnHero()
         spawnBall()
-        spawnBricks()
     }
 }
 info.onScore(75, function () {
@@ -1347,17 +1452,52 @@ function levelSix () {
         tiles.setCurrentTilemap(tilemap`level13`)
         spawnHero()
         spawnBall()
-        spawnBricks()
     }
 }
 scene.onOverlapTile(SpriteKind.Projectile, assets.tile`myTile1`, function (sprite, location) {
     bounceBall(sprite)
     tiles.setTileAt(location, assets.tile`myTile`)
     info.changeScoreBy(1)
+    sprites.destroy(sprite)
 })
-function spawnBricks () {
-	
-}
+scene.onOverlapTile(SpriteKind.bomberBall, assets.tile`myTile0`, function (sprite, location) {
+    bounceBall(sprite)
+    tiles.setTileAt(location, assets.tile`transparency16`)
+    info.changeScoreBy(1)
+    sprite.startEffect(effects.fire)
+    sprites.destroy(sprite)
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+})
+scene.onOverlapTile(SpriteKind.bomberBall, assets.tile`myTile3`, function (sprite, location) {
+    bounceBall(sprite)
+    tiles.setTileAt(location, assets.tile`transparency16`)
+    info.changeScoreBy(1)
+    sprite.startEffect(effects.fire)
+    sprites.destroy(sprite)
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+    projectile = sprites.createProjectileFromSprite(img`
+        4 
+        `, sprite, randint(10, 80), randint(10, 80))
+})
 function levelEight () {
     game.splash("Level Eight!")
     if (level == 8) {
@@ -1488,7 +1628,6 @@ function levelEight () {
         tiles.setCurrentTilemap(tilemap`level17`)
         spawnHero()
         spawnBall()
-        spawnBricks()
     }
 }
 function levelTwo () {
@@ -1621,13 +1760,13 @@ function levelTwo () {
         tiles.setCurrentTilemap(tilemap`level5`)
         spawnHero()
         spawnBall()
-        spawnBricks()
     }
 }
+let powerBall: Sprite = null
+let projectile: Sprite = null
 let bomberball: Sprite = null
 let ballspedY = 0
 let ballspedX = 0
-let powerBall: Sprite = null
 let Hero: Sprite = null
 let ball: Sprite = null
 let ballSpeed = 0
