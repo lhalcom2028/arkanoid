@@ -3,12 +3,17 @@ namespace SpriteKind {
     export const powerupBall = SpriteKind.create()
     export const bomberBall = SpriteKind.create()
     export const ball = SpriteKind.create()
+    export const otherBall = SpriteKind.create()
 }
 scene.onOverlapTile(SpriteKind.ball, assets.tile`myTile`, function (sprite, location) {
     bounceBall(sprite)
     tiles.setTileAt(location, assets.tile`transparency16`)
     info.changeScoreBy(1)
     ifpowerup()
+})
+scene.onOverlapTile(SpriteKind.otherBall, assets.tile`myTile1`, function (sprite, location) {
+    tiles.setTileAt(location, assets.tile`myTile`)
+    info.changeScoreBy(2)
 })
 function levelThree () {
     game.splash("Level Three!")
@@ -155,6 +160,10 @@ info.onScore(210, function () {
 scene.onOverlapTile(SpriteKind.powerupBall, assets.tile`myTile0`, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`transparency16`)
     info.changeScoreBy(6)
+})
+scene.onOverlapTile(SpriteKind.otherBall, assets.tile`myTile2`, function (sprite, location) {
+    tiles.setTileAt(location, assets.tile`myTile1`)
+    info.changeScoreBy(3)
 })
 scene.onOverlapTile(SpriteKind.powerupBall, assets.tile`myTile4`, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`transparency16`)
@@ -521,8 +530,25 @@ function ifpowerup () {
         powerupChooser()
     }
 }
+scene.onOverlapTile(SpriteKind.otherBall, assets.tile`myTile4`, function (sprite, location) {
+    tiles.setTileAt(location, assets.tile`myTile3`)
+    info.changeScoreBy(5)
+})
 scene.onOverlapTile(SpriteKind.powerupBall, assets.tile`myTile3`, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`transparency16`)
+    info.changeScoreBy(4)
+})
+function spawnotherBall () {
+    otherBall = sprites.create(img`
+        2 2 
+        2 2 
+        `, SpriteKind.otherBall)
+    ball.setVelocity(ballSpeed, ballSpeed)
+    ball.setPosition(59, 75)
+    ball.setBounceOnWall(true)
+}
+scene.onOverlapTile(SpriteKind.otherBall, assets.tile`myTile3`, function (sprite, location) {
+    tiles.setTileAt(location, assets.tile`myTile2`)
     info.changeScoreBy(4)
 })
 function spawnpowerupBall () {
@@ -564,6 +590,10 @@ scene.onOverlapTile(SpriteKind.bomberBall, assets.tile`myTile2`, function (sprit
     projectile = sprites.createProjectileFromSprite(img`
         4 
         `, sprite, randint(-80, 80), randint(10, 80))
+})
+scene.onOverlapTile(SpriteKind.otherBall, assets.tile`myTile0`, function (sprite, location) {
+    tiles.setTileAt(location, assets.tile`myTile4`)
+    info.changeScoreBy(6)
 })
 function powerupChooser () {
     powerupNumber = randint(1, 3)
@@ -720,6 +750,10 @@ scene.onOverlapTile(SpriteKind.powerupBall, assets.tile`myTile2`, function (spri
 info.onScore(810, function () {
     level += 1
     levelTen()
+})
+scene.onOverlapTile(SpriteKind.otherBall, assets.tile`myTile`, function (sprite, location) {
+    tiles.setTileAt(location, assets.tile`transparency16`)
+    info.changeScoreBy(1)
 })
 scene.onOverlapTile(SpriteKind.bomberBall, assets.tile`myTile1`, function (sprite, location) {
     bounceBall(sprite)
@@ -893,8 +927,8 @@ scene.onOverlapTile(SpriteKind.bomberBall, assets.tile`myTile4`, function (sprit
         `, sprite, randint(10, 80), randint(10, 80))
 })
 function threeBalls () {
-    spawnBall()
-    spawnBall()
+    spawnotherBall()
+    spawnotherBall()
     info.startCountdown(10)
 }
 function levelSeven () {
@@ -1030,6 +1064,11 @@ function levelSeven () {
         backwall()
     }
 }
+sprites.onOverlap(SpriteKind.otherBall, SpriteKind.Enemy, function (sprite, otherSprite) {
+    sprites.destroy(sprite)
+    pause(2000)
+    spawnotherBall()
+})
 function levelFive () {
     game.splash("Level Five!")
     if (level == 5) {
@@ -1200,17 +1239,17 @@ info.onScore(135, function () {
 })
 function spawnHero () {
     Hero = sprites.create(img`
-        f f f f f f f f f f f f f f f f f f f f f f f f f 
-        f f f f f f f f f f f f f f f f f f f f f f f f f 
-        9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 
-        9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 
-        9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 
-        9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 
-        f f f f f f f f f f f f f f f f f f f f f f f f f 
-        f f f f f f f f f f f f f f f f f f f f f f f f f 
+        f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f 
+        f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f 
+        9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 
+        9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 
+        9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 
+        9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 
+        f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f 
+        f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f 
         `, SpriteKind.Player)
     Hero.setPosition(73, 104)
-    controller.moveSprite(Hero, 70, 0)
+    controller.moveSprite(Hero, 85, 0)
 }
 function levelFour () {
     game.splash("Level Four!")
@@ -1824,6 +1863,7 @@ let bomberball: Sprite = null
 let powerupNumber = 0
 let projectile: Sprite = null
 let powerBall: Sprite = null
+let otherBall: Sprite = null
 let ifpowerUpcheck = 0
 let ifpowerUp = 0
 let ballspedY = 0
