@@ -1249,7 +1249,7 @@ function spawnHero () {
         f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f f 
         `, SpriteKind.Player)
     Hero.setPosition(73, 104)
-    controller.moveSprite(Hero, 85, 0)
+    controller.moveSprite(Hero, paddlespeed, 0)
 }
 function levelFour () {
     game.splash("Level Four!")
@@ -1718,6 +1718,20 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.ball, function (sprite, otherSpr
     bounceBall(otherSprite)
     otherSprite.y = sprite.top - 1
 })
+function difficultyLevel () {
+    Difficulty = game.askForNumber("Set your difficulty level between 1 and 3", 1)
+    if (Difficulty == 1) {
+        ballSpeed = ballSpeed * 0.5
+    } else if (Difficulty == 2) {
+        ballSpeed = ballSpeed * 1
+    } else if (Difficulty == 3) {
+        ballSpeed = ballSpeed * 2
+        paddlespeed = ballSpeed * 1.2
+    } else if (Difficulty != 1 && (Difficulty != 2 && Difficulty != 3)) {
+        game.splash("Invalid Number. Try again!")
+        difficultyLevel()
+    }
+}
 function levelTwo () {
     game.splash("Level Two!")
     if (level == 2) {
@@ -1859,6 +1873,7 @@ function backwall () {
     backWall.setPosition(81, 120)
 }
 let backWall: Sprite = null
+let Difficulty = 0
 let bomberball: Sprite = null
 let powerupNumber = 0
 let projectile: Sprite = null
@@ -1870,11 +1885,14 @@ let ballspedY = 0
 let ballspedX = 0
 let Hero: Sprite = null
 let ball: Sprite = null
+let paddlespeed = 0
 let ballSpeed = 0
 let level = 0
 info.setLife(10)
 info.setScore(0)
 level = 1
 ballSpeed = 60
+paddlespeed = 85
+difficultyLevel()
 levelOne()
 backwall()
